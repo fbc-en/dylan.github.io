@@ -94,14 +94,7 @@ var all_questions = [{
     });
     
     question_container.bind('user-select-change', function() {
-      var all_questions_answered = true;
-      for (var i = 0; i < self.questions.length; i++) {
-        if (self.questions[i].user_choice_index === null) {
-          all_questions_answered = false;
-          break;
-        }
-      }
-      $('#submit-button').prop('disabled', !all_questions_answered);
+      $('#submit-button').prop('disabled', self.questions.some(function(item){ return item.user_choice_index === null }));
     });
   }
   
