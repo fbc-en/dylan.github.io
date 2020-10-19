@@ -1,21 +1,39 @@
+function addHints(question){
+  return  $('<a>').attr('target', '_blank')
+    .attr('href','https://www.esv.org/'+ encodeURI(question.ref.book + ' ' + question.ref.chapter))
+    .text(' Hints');
+}
+
 var all_questions = [{
     question_string: "How did King Saul meet his end?",
+    ref: {
+      book: '1 Chronicles',
+      chapter: 10
+    },
     choices: {
       correct: "He committed suicide",
       wrong: ["He was killed by Philistines", "He died of old age", "He was killed by one of his own men"]
     }
   }, {
     question_string: "Who was Solomon's mother?",
+    ref:{
+      book: '1 Kings',
+      chapter: 1
+    },
     choices: {
       correct: "Bathsheba",
       wrong: ["Hannah", "Rebecca", "Nancy"]
     }
   },
   {
-      question_string: 'Where were David and his men hiding when he cut the skirt from Saul\'s robe?',
+      question_string: 'Who annointed Saul',
+      ref:{
+        book: '1 Samuel',
+        chapter: 10
+      },
       choices : {
-          correct : 'A well',
-          wrong: ['A manger', 'A lake', 'A tomb']
+          correct : 'Sammuel',
+          wrong: ['Abraham', 'Moses', 'Adam']
       }
   }
 ];
@@ -34,7 +52,6 @@ var all_questions = [{
     $('#quiz-results').hide();
     
     var question_container = $('<div>').attr('id', 'question').insertAfter('#quiz-name');
-    
     function change_question() {
       self.questions[current_question_index].render(question_container);
       $('#prev-question-button').prop('disabled', current_question_index === 0);
@@ -98,11 +115,12 @@ var all_questions = [{
     });
   }
   
-  var Question = function(question_string, correct_choice, wrong_choices) {
+  var Question = function(question_string, correct_choice, wrong_choices, ref) {
     this.question_string = question_string;
     this.choices = [];
     this.user_choice_index = null; 
     this.correct_choice_index = Math.floor(Math.random(0, wrong_choices.length + 1));
+    this.ref = ref;
     
     var number_of_choices = wrong_choices.length + 1;
     for (var i = 0; i < number_of_choices; i++) {
@@ -119,15 +137,18 @@ var all_questions = [{
   
   Question.prototype.render = function(container) {
     var self = this;
-    
+
     var question_string_h2;
     if (container.children('h2').length === 0) {
       question_string_h2 = $('<h2>').appendTo(container);
     } else {
       question_string_h2 = container.children('h2').first();
     }
-    question_string_h2.text(this.question_string);
     
+    question_string_h2.text(this.question_string);
+
+    addHints(self).appendTo(question_string_h2);
+
     if (container.children('input[type=radio]').length > 0) {
       container.children('input[type=radio]').each(function() {
         var radio_button_id = $(this).attr('id');
@@ -163,7 +184,7 @@ var all_questions = [{
     var quiz = new Quiz();
     
     all_questions.forEach(function(item,i){
-      quiz.add_question(new Question(all_questions[i].question_string, all_questions[i].choices.correct, all_questions[i].choices.wrong));
+      quiz.add_question(new Question(all_questions[i].question_string, all_questions[i].choices.correct, all_questions[i].choices.wrong, all_questions[i].ref));
     });
 
     quiz.render($('#quiz'));
